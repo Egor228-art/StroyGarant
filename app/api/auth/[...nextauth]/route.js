@@ -24,8 +24,6 @@ export const authOptions = {
           return null;
         }
         
-        console.log(`👤 Найден пользователь: ${user.email}, ID: ${user.id}`);
-        
         const isValid = await bcrypt.compare(credentials.password, user.password);
         console.log(`✅ Результат сравнения: ${isValid}`);
         

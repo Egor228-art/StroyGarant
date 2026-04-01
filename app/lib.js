@@ -1,4 +1,4 @@
-import { getDb } from './lib/db';
+import { sql } from '@vercel/postgres';
 import bcrypt from 'bcryptjs';
 
 let tablesInitialized = false;
@@ -7,10 +7,9 @@ export async function initTables() {
   if (tablesInitialized) return;
   
   try {
-    const db = getDb();
     console.log('🔄 Создание таблиц...');
     
-    await db`
+    await sql`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -30,8 +29,7 @@ export async function initTables() {
 
 export async function getUserByEmail(email) {
   try {
-    const db = getDb();
-    const { rows } = await db`SELECT * FROM users WHERE email = ${email}`;
+    const { rows } = await sql`SELECT * FROM users WHERE email = ${email}`;
     console.log(`🔍 Поиск пользователя ${email}: ${rows.length ? 'найден' : 'не найден'}`);
     return rows[0];
   } catch (error) {
@@ -43,9 +41,8 @@ export async function getUserByEmail(email) {
 export async function createUser(email, password, name, phone = '') {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const db = getDb();
     
-    const { rows } = await db`
+    const { rows } = await sql`
       INSERT INTO users (email, password, name, phone)
       VALUES (${email}, ${hashedPassword}, ${name}, ${phone})
       RETURNING id, email, name
