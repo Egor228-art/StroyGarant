@@ -8,31 +8,18 @@ export async function POST(request) {
     const { email, password, name, phone } = await request.json();
     
     if (!email || !password) {
-      return NextResponse.json(
-        { error: "Заполните все поля" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Заполните поля" }, { status: 400 });
     }
     
-    const existingUser = await getUserByEmail(email);
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "Email уже зарегистрирован" },
-        { status: 400 }
-      );
+    const existing = await getUserByEmail(email);
+    if (existing) {
+      return NextResponse.json({ error: "Email уже зарегистрирован" }, { status: 400 });
     }
     
-    const newUser = await createUser(email, password, name, phone);
-    
-    return NextResponse.json(
-      { success: true, user: newUser },
-      { status: 201 }
-    );
+    const user = await createUser(email, password, name, phone);
+    return NextResponse.json({ success: true, user }, { status: 201 });
   } catch (error) {
-    console.error('Ошибка регистрации:', error);
-    return NextResponse.json(
-      { error: "Ошибка сервера: " + error.message },
-      { status: 500 }
-    );
+    console.error("Ошибка регистрации:", error);
+    return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 });
   }
 }
