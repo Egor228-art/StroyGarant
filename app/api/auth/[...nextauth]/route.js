@@ -12,16 +12,34 @@ export const authOptions = {
         password: { label: "Пароль", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) {
+          console.log("❌ Нет email или пароля");
+          return null;
+        }
+        
+        console.log(`🔐 Попытка входа: ${credentials.email}`);
         
         await initTables();
         
         const user = await getUserByEmail(credentials.email);
-        if (!user) return null;
+        if (!user) {
+          console.log(`❌ Пользователь не найден: ${credentials.email}`);
+          return null;
+        }
+        
+        console.log(`👤 Найден пользователь: ${user.email}, ID: ${user.id}`);
+        console.log(`🔑 Хэш из БД: ${user.password.substring(0, 30)}...`);
+        console.log(`📝 Проверяем пароль: ${credentials.password}`);
         
         const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) return null;
+        console.log(`✅ Результат сравнения: ${isValid}`);
         
+        if (!isValid) {
+          console.log("❌ Пароль не совпадает");
+          return null;
+        }
+        
+        console.log("✅ Авторизация успешна!");
         return { id: user.id, email: user.email, name: user.name };
       }
     })

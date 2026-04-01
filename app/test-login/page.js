@@ -8,11 +8,15 @@ export default function TestLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setMessage("Проверяю...");
+    
+    console.log("Попытка входа:", email, password);
     
     const result = await signIn("credentials", {
       email,
@@ -20,8 +24,11 @@ export default function TestLoginPage() {
       redirect: false,
     });
     
+    console.log("Результат:", result);
+    
     if (result?.error) {
       setMessage(`Ошибка: ${result.error}`);
+      setLoading(false);
     } else {
       setMessage("Успешно! Перенаправление...");
       setTimeout(() => router.push("/dashboard"), 1000);
@@ -52,11 +59,24 @@ export default function TestLoginPage() {
             required
           />
         </div>
-        <button type="submit" style={{ padding: "0.5rem 1rem", background: "#0070f3", color: "white", border: "none", borderRadius: "4px" }}>
-          Войти
+        <button 
+          type="submit" 
+          disabled={loading}
+          style={{ 
+            padding: "0.5rem 1rem", 
+            background: loading ? "#ccc" : "#0070f3", 
+            color: "white", 
+            border: "none", 
+            borderRadius: "4px",
+            cursor: loading ? "not-allowed" : "pointer"
+          }}
+        >
+          {loading ? "Проверка..." : "Войти"}
         </button>
       </form>
-      <p style={{ marginTop: "1rem", color: "#666" }}>{message}</p>
+      <p style={{ marginTop: "1rem", color: loading ? "#666" : (message.includes("Ошибка") ? "red" : "green") }}>
+        {message}
+      </p>
     </div>
   );
 }
