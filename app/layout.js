@@ -36,7 +36,7 @@ function Footer() {
         <div className="footer-section">
           <h3>СтройГарант</h3>
           <p>Лицензия Минстроя № 12345</p>
-          <p>© 2024 Все права защищены</p>
+          <p>© 2026 Все права защищены</p>
         </div>
         <div className="footer-section">
           <h3>Услуги</h3>
